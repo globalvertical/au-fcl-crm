@@ -6,7 +6,7 @@
 <base target="_self">
 <title>FCL 整柜自动报价 · 澳洲FCL客户管理系统</title>
 <script src="../vendor/exceljs.min.mjs"></script>
-<script src="../js/excel-quote-style.mjs?v=20261125c"></script>
+<script src="../js/excel-quote-style.mjs?v=20261125d"></script>
 <script src="../js/clearance.mjs?v=20261119a"></script>
 <script src="../js/chafta.mjs?v=20261119a"></script>
 <style>
@@ -2679,14 +2679,6 @@ async function exportExcelCustomer(){
   const put = (r, c, v, o)=> GVX.put(ws, r, c, v, o || {}, ctx);
   const full = { span: [1, 7], border: false };
   GVX.sheetBasics(ws, COLS, { defaultRowHeight: 16 });
-  /* 中澳航线场景：极淡蓝色单色水印，整页柔化融入（Excel 屏幕与导出 PDF 同步可见） */
-  try{
-    var _wmSrc = (GVX.watermarkDataUrl ? GVX.watermarkDataUrl() : '');
-    if(_wmSrc){
-      const wmId = wb.addImage({ base64: String(_wmSrc).split(',')[1], extension:'png' });
-      ws.addImage(wmId, { tl:{ col:0, row:0 }, ext:{ width: 840, height: 1188 } });
-    }
-  }catch(e){}
   let r = 1;
   /* 头部：LOGO + 标题 */
   try{
@@ -2753,6 +2745,7 @@ async function exportExcelCustomer(){
   /* 报价说明 */
   put(r, 1, t('q_terms'), { size: 9.5, bold: true, color: P.navy, ...full });
   ws.getRow(r).height = 20;
+  var termsRow = r;   /* 说明块首行：左右两侧行业线稿挂在这一行 */
   r++;
   quoteTerms().forEach(x=>{
     put(r, 1, x, { size: 8.5, color: P.ink, ...full });
@@ -2880,6 +2873,17 @@ async function exportExcelCustomer(){
   }catch(e){}
   r++;
   put(r, 1, t('q_thanks'), { size: 9.5, bold: true, color: P.accent, ...full, height: 24 });
+  /* 说明区左右两侧的行业线稿（淡钢蓝，位于正文空白处，不压字） */
+  try{
+    if(typeof termsRow === 'number'){
+      var _L = (GVX.sideArtLeftDataUrl ? GVX.sideArtLeftDataUrl() : '');
+      var _R = (GVX.sideArtRightDataUrl ? GVX.sideArtRightDataUrl() : '');
+      if(_L){ const idL = wb.addImage({ base64: String(_L).split(',')[1], extension:'png' });
+        ws.addImage(idL, { tl:{ col:0, row: termsRow - 1 }, ext:{ width: 168, height: 166 } }); }
+      if(_R){ const idR = wb.addImage({ base64: String(_R).split(',')[1], extension:'png' });
+        ws.addImage(idR, { tl:{ col:6, row: termsRow - 1 }, ext:{ width: 168, height: 126 } }); }
+    }
+  }catch(e){}
   ws.pageSetup.printArea = 'A1:G' + r;
   GVX.autofit(ctx, ws, { base: 0.92, min: 16 });
   let buf = await wb.xlsx.writeBuffer();
