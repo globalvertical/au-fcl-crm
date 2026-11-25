@@ -6,7 +6,7 @@
 <base target="_self">
 <title>FCL 整柜自动报价 · 澳洲FCL客户管理系统</title>
 <script src="../vendor/exceljs.min.mjs"></script>
-<script src="../js/excel-quote-style.mjs?v=20261125d"></script>
+<script src="../js/excel-quote-style.mjs?v=20261125e"></script>
 <script src="../js/clearance.mjs?v=20261119a"></script>
 <script src="../js/chafta.mjs?v=20261119a"></script>
 <style>
@@ -2757,6 +2757,7 @@ async function exportExcelCustomer(){
     var VZ = { yes:'可直接进柜', conditional:'有条件能进', no:'不能进', unknown:'数据不足，需现场确认' };
     r++;
     put(r, 1, '备注 / REMARK（地址通行核验）', { size: 9.5, bold: true, color: P.navy, ...full });
+    var remarkRow = r;   /* 备注块首行：右侧空位放中澳航线示意 */
     ws.getRow(r).height = 20;
     r++;
     var lines = [
@@ -2882,6 +2883,11 @@ async function exportExcelCustomer(){
         ws.addImage(idL, { tl:{ col:0, row: termsRow - 1 }, ext:{ width: 168, height: 166 } }); }
       if(_R){ const idR = wb.addImage({ base64: String(_R).split(',')[1], extension:'png' });
         ws.addImage(idR, { tl:{ col:6, row: termsRow - 1 }, ext:{ width: 168, height: 126 } }); }
+      var _RT = (GVX.routeArtDataUrl ? GVX.routeArtDataUrl() : '');
+      if(_RT && typeof remarkRow === 'number'){
+        const idRT = wb.addImage({ base64: String(_RT).split(',')[1], extension:'png' });
+        ws.addImage(idRT, { tl:{ col:5, row: remarkRow - 1 }, ext:{ width: 180, height: 68 } });
+      }
     }
   }catch(e){}
   ws.pageSetup.printArea = 'A1:G' + r;
