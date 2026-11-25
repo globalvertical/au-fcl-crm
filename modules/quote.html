@@ -2683,10 +2683,11 @@ async function exportExcelCustomer(){
   /* 头部：LOGO + 标题 */
   try{
     var _cstLogo = ''; try { _cstLogo = localStorage.getItem('aufcl_logo') || ''; } catch(e) {}
-    var _logoSrc = _cstLogo || String(window.__LOGO__ || '');
+    var _logoSrc = _cstLogo || GVX.logoDataUrl() || String(window.__LOGO__ || '');
     var _logoExt = /^data:image\/(png|jpeg|jpg|webp)/i.test(_logoSrc) ? (_logoSrc.match(/^data:image\/(png|jpeg|jpg|webp)/i)[1].toLowerCase().replace('jpg','jpeg')) : 'png';
     const imgId = wb.addImage({ base64: String(_logoSrc || '').split(',')[1], extension: _logoExt });
-    ws.addImage(imgId, { tl:{ col:0, row:0 }, ext:{ width:128, height:36 } });
+    /* 左上角公司 LOGO：128 × 47px，右侧留白，与标题区共处一个色带 */
+    ws.addImage(imgId, { tl:{ col:0.04, row:0.05 }, ext:{ width:128, height:47 } });
   }catch(e){}
   put(1, 3, t('q_title'), { size: 20, bold: true, color: P.navy, span: [3, 7], border: false, height: 32 });
   put(2, 3, 'GlobalVertical Logistics · global-vertical.com', { size: 8.5, color: P.muted, span: [3, 7], border: false, height: 16 });
@@ -3023,9 +3024,11 @@ async function exportExcelInternal(){
   GVX.sheetBasics(ws, COLS, { defaultRowHeight: 16 });
   let r = 1;
   try{
-    const imgId = wb.addImage({ base64: String(window.__LOGO__ || '').split(',')[1], extension:'png' });
-    ws.getRow(1).height = 40;
-    ws.addImage(imgId, { tl:{ col:0, row:0 }, ext:{ width:132, height:37 } });
+    const _ls = (function(){ try { return localStorage.getItem('aufcl_logo') || ''; } catch(e) { return ''; } })();
+    const _src = _ls || GVX.logoDataUrl() || String(window.__LOGO__ || '');
+    const imgId = wb.addImage({ base64: String(_src || '').split(',')[1], extension:'png' });
+    ws.getRow(1).height = 46;
+    ws.addImage(imgId, { tl:{ col:0.04, row:0.05 }, ext:{ width:132, height:48 } });
     GVX.gradRow(ws, 1, 1, 9, P.sky3, P.silver2);
     r = 2;
   }catch(e){}
