@@ -6,7 +6,7 @@
 <base target="_self">
 <title>FCL 整柜自动报价 · 澳洲FCL客户管理系统</title>
 <script src="../vendor/exceljs.min.mjs"></script>
-<script src="../js/excel-quote-style.mjs?v=20261125a"></script>
+<script src="../js/excel-quote-style.mjs?v=20261125b"></script>
 <script src="../js/clearance.mjs?v=20261119a"></script>
 <script src="../js/chafta.mjs?v=20261119a"></script>
 <style>
@@ -2683,7 +2683,7 @@ async function exportExcelCustomer(){
   /* 头部：LOGO + 标题 */
   try{
     var _cstLogo = ''; try { _cstLogo = localStorage.getItem('aufcl_logo') || ''; } catch(e) {}
-    var _logoSrc = _cstLogo || GVX.logoDataUrl() || String(window.__LOGO__ || '');
+    var _logoSrc = _cstLogo || (GVX.logoDataUrl ? GVX.logoDataUrl() : '') || String(window.__LOGO__ || '');
     var _logoExt = /^data:image\/(png|jpeg|jpg|webp)/i.test(_logoSrc) ? (_logoSrc.match(/^data:image\/(png|jpeg|jpg|webp)/i)[1].toLowerCase().replace('jpg','jpeg')) : 'png';
     const imgId = wb.addImage({ base64: String(_logoSrc || '').split(',')[1], extension: _logoExt });
     /* 左上角公司 LOGO：128 × 47px，右侧留白，与标题区共处一个色带 */
@@ -3025,7 +3025,7 @@ async function exportExcelInternal(){
   let r = 1;
   try{
     const _ls = (function(){ try { return localStorage.getItem('aufcl_logo') || ''; } catch(e) { return ''; } })();
-    const _src = _ls || GVX.logoDataUrl() || String(window.__LOGO__ || '');
+    const _src = _ls || (GVX.logoDataUrl ? GVX.logoDataUrl() : '') || String(window.__LOGO__ || '');
     const imgId = wb.addImage({ base64: String(_src || '').split(',')[1], extension:'png' });
     ws.getRow(1).height = 46;
     ws.addImage(imgId, { tl:{ col:0.04, row:0.05 }, ext:{ width:132, height:48 } });
