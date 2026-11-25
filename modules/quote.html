@@ -2880,18 +2880,6 @@ async function exportExcelCustomer(){
   }catch(e){}
   r++;
   put(r, 1, t('q_thanks'), { size: 9.5, bold: true, color: P.accent, ...full, height: 24 });
-  /* 页脚：中澳航线场景带（淡化，透明 PNG —— Excel 与导出 PDF 都可看到，永远在报价内容之下方） */
-  try{
-    var _wmSrc = (GVX.watermarkDataUrl ? GVX.watermarkDataUrl() : '');
-    if(_wmSrc){
-      r++;
-      ws.getRow(r).height = 5;
-      r++;
-      ws.getRow(r).height = 172;
-      const wmId = wb.addImage({ base64: String(_wmSrc).split(',')[1], extension:'png' });
-      ws.addImage(wmId, { tl:{ col:0, row: r - 1 }, ext:{ width: 840, height: 225 } });
-    }
-  }catch(e){}
   ws.pageSetup.printArea = 'A1:G' + r;
   GVX.autofit(ctx, ws, { base: 0.92, min: 16 });
   let buf = await wb.xlsx.writeBuffer();
