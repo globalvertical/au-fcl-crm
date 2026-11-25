@@ -6,7 +6,7 @@
 <base target="_self">
 <title>FCL 整柜自动报价 · 澳洲FCL客户管理系统</title>
 <script src="../vendor/exceljs.min.mjs"></script>
-<script src="../js/excel-quote-style.mjs?v=20261125e"></script>
+<script src="../js/excel-quote-style.mjs?v=20261125f"></script>
 <script src="../js/clearance.mjs?v=20261119a"></script>
 <script src="../js/chafta.mjs?v=20261119a"></script>
 <style>
@@ -2776,6 +2776,7 @@ async function exportExcelCustomer(){
       put(r, 1, x, { size: 8.5, bold: emph, color: emph ? 'FF9E4B3F' : P.muted, ...full });
       r++;
     });
+    var remarkEndRow = r;   /* 备注正文结束行：右侧空位放中澳航线示意 */
     r++;
   }
   /* ===== 国内费用 / CHINA ORIGIN CHARGES（货代装柜） ===== */
@@ -2884,9 +2885,10 @@ async function exportExcelCustomer(){
       if(_R){ const idR = wb.addImage({ base64: String(_R).split(',')[1], extension:'png' });
         ws.addImage(idR, { tl:{ col:6, row: termsRow - 1 }, ext:{ width: 168, height: 126 } }); }
       var _RT = (GVX.routeArtDataUrl ? GVX.routeArtDataUrl() : '');
-      if(_RT && typeof remarkRow === 'number'){
+      if(_RT && typeof remarkEndRow === 'number'){
         const idRT = wb.addImage({ base64: String(_RT).split(',')[1], extension:'png' });
-        ws.addImage(idRT, { tl:{ col:5, row: remarkRow - 1 }, ext:{ width: 180, height: 68 } });
+        /* 与两侧线稿同宽（168px），贴着备注正文右侧空位，不压字 */
+        ws.addImage(idRT, { tl:{ col:6, row: remarkRow + 2 }, ext:{ width: 168, height: 63 } });
       }
     }
   }catch(e){}
